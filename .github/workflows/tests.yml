@@ -1,0 +1,37 @@
+name: tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    env:
+      LOTSS_ASSOCIATION_SOURCE_COMMIT: ${{ github.sha }}
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev]"
+      - name: Test
+        run: |
+          ruff check lotss_association scripts tests
+          pytest
+          python -m compileall -q lotss_association scripts tests
+          python -m build
+          python -m pip install --force-reinstall dist/*.whl
+          cd /tmp
+          python -c "import lotss_association; print(lotss_association.__file__)"
+          python -c "import lotss_association; from pathlib import Path; from lotss_association.utils import load_yaml, packaged_config_uri; load_yaml(packaged_config_uri('default.yaml')); load_yaml(packaged_config_uri('default.yaml')); assert Path.cwd() / 'outputs' != Path(lotss_association.__file__).resolve().parent / 'outputs'"
+          python -c "import sys; from pathlib import Path; from scripts import run_pipeline; sys.argv = ['lotss-association', '--h5-path', 'input.h5', '--gaus-catalog', 'input.fits']; assert Path(run_pipeline.parse_args().output_dir) == Path.cwd() / 'outputs'"
+          lotss-association --help
+          lotss-parent-link --help
+          lotss-visualize --help

@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it using the metadata below."
+title: "LoTSS Association: Rule-Based Gaussian Component Association"
+authors:
+  - family-names: Cao
+    given-names: Jie
+version: 0.1.1
+license: MIT
+repository-code: "https://github.com/astrocaojie/LoTSS_association"

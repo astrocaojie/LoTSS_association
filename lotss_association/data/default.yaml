@@ -1,0 +1,415 @@
+h5:
+  image_key: null
+  rms_key: null
+  mean_key: null
+  id_key: null
+  ra_key: null
+  dec_key: null
+  wcs_key: null
+
+matching:
+  # Broad spatial preselection before exact WCS/pixel projection.
+  preselect_margin_arcsec: 120.0
+
+runtime:
+  # Scientific runs must obtain pixel scale and noise from input metadata.
+  strict_metadata: true
+
+features:
+  use_multithreshold_contour: true
+  use_ridge_continuity: true
+  use_ellipse_overlap: true
+  use_pa_alignment: true
+  use_weak_edge_anti_chaining: true
+  use_artifact_penalties_layer1: true
+  use_artifact_penalties_layer2: true
+  use_midpoint_host_support: true
+  use_lobe_peak_host_contradiction: true
+  use_stage2_relative_scale_constraints: true
+  use_stage2_endpoint_filtering: true
+
+snr_thresholds: [5.0, 4.0, 3.0, 2.5, 2.0]
+
+mean_mode: "median"
+rms_mode: "mad"
+
+smooth_before_segmentation: true
+gaussian_smooth_sigma_pix: 1.0
+
+min_mask_area_pix: 30
+connectivity: 2
+binary_opening: false
+binary_closing: true
+
+association:
+  enabled: true
+
+  max_pair_distance_beam: 15.0
+  max_pair_distance_arcsec: 120.0
+
+  threshold_strong: 3.0
+  threshold_weak: 2.0
+
+
+  min_bridge_width_beam: 0.8
+  min_bridge_length_beam: 1.0
+  max_only_2sigma_score: 0.5
+  enable_beam_aware_morphology: true
+  enable_unresolved_pair_veto: true
+  enable_residual_bridge: true
+  residual_bridge_threshold_snr: 2.5
+  residual_bridge_min_length_fraction: 0.45
+  residual_bridge_min_area_beams: 0.25
+  residual_bridge_endpoint_exclusion_beam: 0.6
+  unresolved_veto_beam_like_score: 0.70
+  unresolved_veto_min_bridge_score: 0.70
+  unresolved_veto_min_residual_bridge_score: 0.55
+  unresolved_veto_min_common_envelope_area_beam: 1.0
+  veto_score_cap: -1.0
+  independent_support_bridge_min_score: 0.55
+  independent_support_ridge_min_score: 0.55
+  independent_support_overlap_min_score: 0.75
+
+  quality_thresholds:
+    high: 3.5
+    medium: 2.5
+    low: 1.5
+
+weights_association:
+  closeness: 1.0
+  overlap: 1.0
+  pa_alignment: 0.8
+  conn_3sigma: 1.5
+  conn_2p5sigma: 0.6
+  conn_2sigma: 0.0
+  bridge: 1.2
+  ridge: 1.2
+  flux_continuity: 0.5
+  flow_alignment: 0.6
+
+  valley: 1.5
+  only_2sigma: 1.0
+  negative_bowl: 1.2
+  sidelobe: 1.5
+  too_far: 2.0
+  large_mask_swallow: 1.5
+
+association_types:
+  compact_multi_gaussian:
+    max_las_beam: 4.0
+  continuous_extended:
+    min_las_beam: 4.0
+  diffuse_extended:
+    min_las_beam: 6.0
+  linear_or_tail_like:
+    min_axis_ratio: 2.0
+  complex_association:
+    min_components: 5
+  weak_association:
+    max_quality: "low"
+  artifact_risk:
+    enabled: true
+
+beam_aware_classification:
+  beam_like_axis_ratio_tolerance: 0.35
+  beam_like_size_tolerance: 0.35
+  beam_like_pa_tolerance_deg: 20.0
+  beam_like_score_unresolved: 0.70
+  resolved_deconv_major_fraction: 0.45
+  resolved_deconv_minor_fraction: 0.35
+  marginal_deconv_major_fraction: 0.20
+  intrinsic_resolved_fraction: 0.35
+  intrinsic_marginal_fraction: 0.15
+  low_snr_threshold: 5.0
+  pa_weight_unresolved: 0.0
+  pa_weight_beam_like: 0.0
+  pa_weight_marginal: 0.35
+  pa_weight_resolved: 1.0
+  pa_weight_unknown: 0.15
+
+local_association:
+  enabled: true
+
+  local_sanity:
+    enabled: true
+
+    max_group_las_beam_before_check: 8.0
+    max_group_n_gaussians_before_check: 6
+
+    min_saddle_to_peak_ratio: 0.35
+    max_ridge_gap_fraction: 0.35
+    max_weak_edge_chain_fraction: 0.50
+    max_only_2sigma_edge_fraction: 0.25
+
+    split_overmerged_groups: true
+    mark_suspicious_if_unsplittable: true
+
+    min_subgroup_size: 1
+    min_split_score_gain: 0.5
+    min_path_snr: 2.5
+
+parent_seed_selection:
+  enabled: true
+  max_box_gap_beam: 10.0
+  strong_box_gap_beam: 5.0
+  min_endpoint_las_beam: 3.0
+  min_endpoint_mask_area_beam: 3.0
+  min_endpoint_n_gaussians: 2
+  min_parent_seed_peak_snr: 8.0
+  min_parent_seed_area_3sigma_beam: 2.0
+  max_parent_candidates_per_group: 1
+  max_parent_candidates_per_cutout: 10
+  candidate_search_padding_factor: 1.5
+
+  compact_singleton:
+    max_las_beam: 3.0
+    max_area_3sigma_beam: 2.0
+    max_mask_area_beam: 2.0
+
+  mask_area_fallback:
+    las_weight: 0.45
+    gaussian_count_weight: 0.35
+
+  midpoint_core:
+    search_radius_beam: 3.0
+    axial_fraction_min: 0.15
+    axial_fraction_max: 0.85
+
+  score_weights:
+    gap: 1.5
+    axis_alignment: 1.4
+    facing: 1.0
+    flux_balance: 0.7
+    size_balance: 0.6
+    midpoint_core: 0.8
+
+  thresholds:
+    high_score: 4.0
+    medium_score: 3.2
+    low_score: 2.5
+
+  evidence:
+    axis_alignment_min: 0.7
+    facing_min: 0.6
+    max_flux_ratio: 10.0
+    max_size_ratio: 5.0
+    missing_ratio_score: 0.35
+    strong_gap_min_count: 2
+    wide_gap_min_count: 3
+
+host_support:
+  enabled: true
+  require_host_for_parent_link: true
+  catalog_priority: ["catwise2020", "allwise"]
+
+  min_search_radius_arcsec: 10.0
+  max_search_radius_arcsec: 30.0
+  search_radius_fraction_of_sep: 0.12
+
+  max_host_results_per_query: 20
+  host_score_weight: 1.0
+  min_host_quality_for_default_candidate: "medium"
+
+  host_quality_thresholds:
+    high: 3.0
+    medium: 2.0
+
+  geometry:
+    high_max_perp_offset_beam: 1.5
+    medium_max_perp_offset_beam: 2.0
+    high_fractional_position_min: 0.35
+    high_fractional_position_max: 0.65
+    medium_fractional_position_min: 0.25
+    medium_fractional_position_max: 0.75
+
+  wise_color:
+    agn_bonus_w1_w2_min: 0.8
+    agn_bonus: 0.5
+    require_agn_color: false
+
+  score_weights:
+    midpoint_closeness: 2.0
+    axis_consistency: 1.5
+    wise_detection: 0.8
+    artifact_penalty: 1.0
+
+  detection_scoring:
+    snr_scale: 10.0
+    catalogued_w1_fallback: 0.5
+
+  parent_quality:
+    high_final_score_min: 6.0
+
+parent_linking:
+  enabled: true
+  max_box_gap_beam: 12.0
+  max_center_distance_beam: 40.0
+  min_axis_alignment: 0.7
+  min_facing_score: 0.6
+  max_flux_ratio: 20.0
+  max_size_ratio: 8.0
+  min_symmetry_score: 0.6
+
+  artifact_veto_score: 1.2
+  artifact_suspicious_score: 0.8
+  min_parent_ridge_support: 0.65
+  bright_source_near_beam: 8.0
+  bright_source_radial_min: 0.72
+  bright_source_flux_ratio_min: 5.0
+  fragment_density_radius_beam: 8.0
+  fragment_count_artifact: 12
+
+  lobe_peak_host_radius_arcsec_min: 5.0
+  lobe_peak_host_radius_arcsec_max: 10.0
+
+  max_parent_candidates_per_group: 2
+  max_parent_candidates_per_cutout: 20
+  candidate_search_padding_factor: 1.5
+
+  endpoint_thresholds:
+    point_las_max_beam: 3.0
+    point_major_max_beam: 1.8
+    point_area_max_beam: 3.0
+    point_axis_ratio_max: 1.7
+    compact_las_max_beam: 3.0
+    compact_area_max_beam: 2.0
+    compact_major_max_beam: 1.5
+    compact_axis_ratio_max: 1.5
+    singleton_las_max_beam: 3.5
+    singleton_area_max_beam: 2.5
+    singleton_axis_ratio_max: 1.6
+    observed_major_max_beam: 1.4
+    observed_minor_max_beam: 1.4
+    noise_peak_snr_min: 6.0
+    noise_area_min_beam: 1.5
+    extended_las_min_beam: 3.0
+    extended_area_min_beam: 2.5
+    extended_major_min_beam: 2.0
+    extended_axis_ratio_min: 1.5
+    extended_peak_snr_min: 6.0
+    extended_n_gaussians_min: 2
+    strong_multi_min_gaussians: 3
+    strong_multi_min_area_beam: 2.0
+    strong_multi_las_margin_beam: 0.5
+    self_extended_area_margin_beam: 0.5
+    self_extended_major_min_beam: 2.2
+    self_extended_axis_ratio_margin: 0.1
+
+  rescue_thresholds:
+    near_gap_beam: 6.0
+    gap_to_mean_box_max: 1.0
+    gap_to_min_box_max: 1.5
+    support_ridge_min: 0.45
+    axis_alignment_min: 0.50
+    facing_min: 0.40
+    max_flux_ratio: 30.0
+    max_size_ratio: 10.0
+    min_gaussians_each: 2
+    extended_gaussians_min: 3
+    min_area_each_beam: 2.5
+
+  artifact_environment_thresholds:
+    very_close_distance_beam: 4.0
+    very_bright_flux_ratio: 10.0
+    very_close_score: 0.7
+    artifact_flag_score: 1.4
+    radial_base_score: 1.1
+    radial_alignment_bonus: 0.5
+    crowded_fragment_score: 0.8
+    bright_reference_count: 5
+
+  support_thresholds:
+    sigma_3: 3.0
+    sigma_2p5: 2.5
+    bridge_low_snr: 2.0
+    bridge_high_snr: 2.5
+    bridge_low_fraction: 0.45
+    bridge_high_fraction: 0.25
+    ridge_low_weight: 0.6
+    ridge_high_weight: 0.4
+    neighbor_search_radius_beam: 8.0
+    neighbor_ridge_min: 0.45
+    threshold_match_tolerance: 0.26
+
+  symmetry_weights:
+    axis_alignment: 0.30
+    facing: 0.25
+    midpoint_symmetry: 0.15
+    flux_balance: 0.15
+    size_balance: 0.15
+
+  lobe_peak_host_scoring:
+    snr_scale: 10.0
+    w1_detection_weight: 1.0
+    w2_detection_weight: 0.5
+    catalogued_w1_fallback: 0.5
+    closeness_weight: 1.8
+    detection_weight: 0.8
+    high_score_min: 2.0
+    medium_score_min: 1.2
+    high_radius_fraction: 0.6
+
+  candidate_quality_thresholds:
+    high_symmetry_min: 0.70
+    needs_host_check_symmetry_min: 0.68
+
+  score_weights:
+    symmetry: 1.4
+    gap: 0.7
+    midpoint_core: 0.3
+
+weights_graph:
+  same_island: 0.0
+  conn_3sigma: 2.0
+  conn_2p5sigma: 1.0
+  conn_2sigma: 0.3
+  bridge: 1.0
+  overlap: 0.8
+  closeness: 0.8
+  pa_alignment: 0.7
+  pixel_support: 0.8
+  valley: 1.5
+  compact_pair: 1.0
+  too_far: 2.5
+
+graph_merge:
+  max_pair_distance_arcsec: 120.0
+  max_pair_distance_beam: 15.0
+  merge_threshold: 3.0
+
+beam:
+  major_arcsec: 6.0
+  minor_arcsec: 6.0
+  pa_deg: 0.0
+
+visualization:
+  stretch: "asinh"
+  percent_clip: [1, 99.5]
+
+  overview:
+    draw_all_labels: false
+    draw_singletons: false
+    label_min_components: 2
+    max_labels: 30
+    label_top_by: "LAS_arcsec"
+    draw_gaussian_ids: false
+    draw_component_ids: false
+    max_gaussians_drawn: 500
+    gaussian_marker_size: 4
+    max_edges_drawn: 300
+    draw_nonmerged_edges: false
+    edge_min_score: null
+    contour_thresholds: [3.0, 2.5]
+
+  zoom:
+    enabled: true
+    max_zoom_per_cutout: 20
+    select_min_components: 2
+    select_top_las: 10
+    select_top_confidence: 10
+    padding_pix: 100
+    min_size_pix: 256
+    max_size_pix: 1024
+    contour_thresholds: [5.0, 3.0, 2.5, 2.0]
+    draw_gaussian_ids: true
+    draw_edge_scores: true

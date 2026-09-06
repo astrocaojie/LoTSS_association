@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.venv/
+venv/
+
+# Local data and run products
+data/
+!lotss_association/data/
+!lotss_association/data/*.yaml
+outputs/
+outputs*/
+work_dirs/
+logs/
+checkpoints/
+*.fits
+*.fits.gz
+*.h5
+*.hdf5
+*.parquet
+*.csv
+*.csv.gz
+*.npz
+*.png
+*.jpg
+*.jpeg
+*.pdf
+
+# Keep small example metadata files visible if they are ever added.
+!examples/**/*.csv
+!examples/**/*.yaml
+!examples/**/*.yml
+!examples/**/*.env
+
+# Editors and OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
