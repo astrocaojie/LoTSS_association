@@ -237,6 +237,20 @@ discovery errors cannot be hidden by `pytest`'s repository path. When a release
 environment has no network access, build and installation should be performed
 from a pre-populated wheelhouse.
 
+## AI-assisted Development
+
+[Anthropic Claude Code](https://claude.com/claude-code) and
+[OpenAI Codex](https://openai.com/codex/) were used as supporting tools during
+the development and revision of this repository. Their assistance included
+code review, debugging, refactoring suggestions, test development,
+visualization and plotting scripts, and software documentation.
+
+All AI-assisted changes were reviewed, edited where necessary, and tested by
+the authors. The scientific methodology, association criteria, parameter
+choices, validation procedures, interpretation of results, and final software
+decisions were determined and verified by the authors, who assume full
+responsibility for the contents of this repository.
+
 ## Citation
 
 If you use this code, cite the repository and the associated paper or data
