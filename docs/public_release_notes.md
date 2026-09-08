@@ -8,7 +8,7 @@ Current release metadata:
 
 - Package name: `lotss-association`
 - Python import name: `lotss_association`
-- Package version: `0.1.1` (prepared; publish a matching tag/release when archived)
+- Package version: `0.1.1`
 - License: MIT
 - Recommended configuration: `configs/default.yaml`
 

@@ -32,7 +32,13 @@ def test_release_versions_are_consistent() -> None:
     assert package_version is not None and citation_version is not None
     release_version = package_version.group(1)
     assert __version__ == release_version == citation_version.group(1).strip()
-    assert f"## {release_version} - Unreleased" in changelog
+    release_heading = re.compile(
+        rf"^## {re.escape(release_version)} - (Unreleased|\d{{4}}-\d{{2}}-\d{{2}})$",
+        re.MULTILINE,
+    )
+    assert release_heading.search(changelog), (
+        f"CHANGELOG.md is missing a '## {release_version} - <date or Unreleased>' heading"
+    )
 
 
 def test_packaged_configs_load_and_cli_defaults_stay_out_of_site_packages(monkeypatch, tmp_path) -> None:

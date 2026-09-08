@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.1.1 - Unreleased
+## 0.1.1 - 2026-09-08
 
 - Normalized standard PyBDSF Gaussian and deconvolved sizes from degrees to
   arcseconds, and supported `Xposn`/`Yposn` pixel-only Gaussian catalogues.
