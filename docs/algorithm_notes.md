@@ -7,8 +7,9 @@ candidate parts, not as final physical radio sources. Low-threshold
 SExtractor-style segmentation supplies evidence about diffuse radio continuity,
 and the authoritative `association.py` path turns component-level evidence
 into conservative local association groups. `graph_merge.py` is retained as a
-compatibility/diagnostic path and is only used when explicitly selected by a
-caller; it is not an implicit Stage 1 dependency.
+compatibility/diagnostic path whose clustering is only used when a caller
+explicitly selects `--no-association-mode`; Stage 1 association decisions do
+not use graph-merge scoring.
 
 ## 1. PyBDSF Detection Summary
 
@@ -138,6 +139,10 @@ project uses the idea in reverse:
 In short: high thresholds identify parts; low thresholds provide merge evidence.
 
 ## 7. Rule-Based Merge Features
+
+This section describes the legacy `--no-association-mode` graph-merge path.
+The release Stage 1 result is produced by `association.py` instead, whose
+evidence system and scoring are documented in `docs/association_strategy.md`.
 
 Positive evidence:
 

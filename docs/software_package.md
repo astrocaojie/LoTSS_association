@@ -33,8 +33,8 @@ The package is split into four practical layers:
 4. **Diagnostics and reporting**
    - `lotss_association.visualize`: overview and zoom diagnostic plots.
    - `lotss_association.graph_merge`: compatibility/diagnostic graph path for
-     callers that explicitly select `--no-association-mode`; it is not an
-     implicit dependency of the authoritative Stage 1 association path.
+     callers that explicitly select `--no-association-mode`; Stage 1
+     association decisions do not use graph-merge scoring.
    - `lotss_association.measurements`: measure source-level catalogue fields.
 
 ## Stable and Excluded Areas

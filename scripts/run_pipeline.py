@@ -306,9 +306,8 @@ def write_cutout_partials(
         association_components if association_components is not None else pd.DataFrame(),
         ASSOCIATION_COMPONENT_COLUMNS,
     )
-    # CSV is the canonical partial representation. Remove an older parquet
-    # sibling before replacing a cutout so a resumed run cannot merge stale
-    # rows from a previous environment that happened to have parquet support.
+    # Remove stale parquet siblings before replacing CSV partials so resumed
+    # runs cannot mix rows from two formats.
     for stem in (
         "merged_sources",
         "edges",
@@ -474,8 +473,7 @@ def combine_partials(output_dir: Path, allowed_cutouts: set[str] | None = None) 
 
     status_path = output_dir / "logs" / "status.csv"
     if allowed_cutouts is None and status_path.exists():
-        # A status file is authoritative: failed/stale cutouts must never be
-        # republished from an older partial left in the output directory.
+        # The status file decides which partials may be republished.
         allowed_cutouts = done_cutouts(status_path)
     elif allowed_cutouts is not None:
         allowed_cutouts = {str(cutout_id) for cutout_id in allowed_cutouts}
@@ -516,9 +514,8 @@ def combine_partials(output_dir: Path, allowed_cutouts: set[str] | None = None) 
             frame = None
             empty_frame = None
             errors: list[str] = []
-            # Prefer parquet, but fall back to CSV when parquet dependencies or
-            # an older partial prevent reading it.  Exactly one frame per field
-            # is included even when both formats exist.
+            # Prefer parquet, falling back to CSV; include exactly one frame
+            # per field even when both formats exist.
             for extension in ("parquet", "csv"):
                 path = candidates.get(extension)
                 if path is None:
@@ -658,10 +655,9 @@ def process_cutout(
         local_needs_visual_check = pd.DataFrame()
     else:
         if association_mode:
-            # The formal release path is Stage 1 association; main() has already
-            # rejected --association-mode combined with disabled association
-            # sections.  The historical graph-merge path remains available
-            # through build_component_graph and --no-association-mode only.
+            # The legacy graph-merge path is only reachable via
+            # --no-association-mode; main() rejects the disabled-section
+            # combination for --association-mode.
             association_result = run_component_association(cutout, segmentation, components, config)
             association_groups = association_result.groups
             association_edges = association_result.edges
@@ -848,9 +844,8 @@ def main() -> None:
 
     combine_partials(output_dir, allowed_cutouts=done_cutouts(status_path) if status_path.exists() else set())
     logger.info("Wrote merged catalogs under %s", output_dir / "catalogs")
-    # Include failures already present in status.csv when --resume skips them;
-    # a resumed command must not report success while selected items remain
-    # failed from an earlier attempt.
+    # Count failures already recorded in status.csv so a resumed run cannot
+    # report success while selected items remain failed.
     final_status = load_status(status_path)
     selected_status = final_status[final_status["cutout_id"].astype(str).isin(selected_cutout_ids)] if selected_cutout_ids else final_status.iloc[0:0]
     failure = failed_status_message(selected_status.to_dict(orient="records"), "Local association")

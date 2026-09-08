@@ -112,8 +112,8 @@ The code guards against non-finite pixels and non-positive rms values.
 For every configured threshold:
 
 1. Build `mask = S/N > threshold`.
-2. Remove small objects smaller than `min_mask_area_pix`.
-3. Optionally apply binary opening and/or closing.
+2. Optionally apply binary opening and/or closing.
+3. Remove small objects smaller than `min_mask_area_pix`.
 4. Label connected components using configured connectivity.
 5. Store masks and label maps.
 

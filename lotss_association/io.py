@@ -26,7 +26,6 @@ WCS_CANDIDATES = ["header", "wcs", "fits_header", "cutout_header", "cutout_wcs_h
 class H5Keys:
     """Detected H5 dataset names for image, noise, position, and WCS fields."""
 
-    # Store the dataset names detected across supported H5 layouts.
     image_key: str | None = None
     rms_key: str | None = None
     mean_key: str | None = None
@@ -40,7 +39,6 @@ class H5Keys:
 class Cutout:
     """One radio image cutout and its optional noise, sky-position, and WCS metadata."""
 
-    # Downstream stages consume this layout-independent cutout representation.
     cutout_id: str
     image: np.ndarray
     rms: np.ndarray | float | None = None
@@ -327,9 +325,8 @@ def _read_indexed_dataset(
         squeezed = np.squeeze(value)
         if tuple(squeezed.shape) == tuple(image_shape):
             value = squeezed
-    # Metadata exported as N×1 arrays (common for scalar RMS/coordinates) is
-    # semantically scalar for one cutout.  Collapse only singleton arrays so
-    # image-shaped maps and multi-value headers remain intact.
+    # Collapse singleton N×1 metadata arrays (common for scalar RMS and
+    # coordinates); keep image-shaped maps and multi-value headers intact.
     if isinstance(value, np.ndarray) and value.size == 1:
         value = decode_if_bytes(value.reshape(-1)[0])
     return value

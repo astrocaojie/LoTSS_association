@@ -1,8 +1,8 @@
-"""Validated configuration schema for the public association package.
+"""Validated configuration schema and scientific defaults for the package.
 
-The package keeps its historical mapping-based API, but all production entry
-points pass through the schema in this module.  Scientific defaults live here
-once, so implementation fallbacks cannot silently drift from the YAML files.
+Scientific defaults live here once; production entry points pass through the
+schema in this module so implementation fallbacks cannot drift from the YAML
+configuration.
 """
 
 from __future__ import annotations
@@ -43,9 +43,8 @@ VALLEY_REFERENCE_SNR = 2.0
 VALLEY_SCORE_SNR_SPAN = 4.0
 NEGATIVE_BOWL_SCORE_SNR_SPAN = 3.0
 
-# Fixed score-formula coefficients.  These are part of the published
-# rule-based method, rather than user-tunable thresholds, so they are named
-# here and imported by the production scoring code.
+# Fixed score-formula coefficients for the published rule-based method; these
+# are not user-tunable configuration keys.
 BRIDGE_SCORE_WEIGHTS = (0.35, 0.25, 0.25, 0.15)
 RESIDUAL_BRIDGE_SCORE_WEIGHTS = (0.30, 0.20, 0.20, 0.20, 0.10)
 RIDGE_SCORE_WEIGHTS = (0.55, 0.30, 0.15)
@@ -53,9 +52,8 @@ BRIDGE_LENGTH_SHORT_SCORE = 0.7
 RESIDUAL_BRIDGE_MIN_WIDTH_BEAM = 0.6
 RESIDUAL_BRIDGE_PEAK_SCORE_SPAN = 2.0
 RESIDUAL_BRIDGE_NEGATIVE_MEAN_FRACTION = 0.5
-# Frozen method decision gates.  They affect merge/reject classification and
-# are kept as named constants so the release method is explicit and auditable;
-# they are not runtime/environment defaults.
+# Frozen method decision gates (not runtime/environment defaults); changing
+# them is a method revision.
 ASSOCIATION_SUPPORT_SCORE_MIN = 0.45
 ASSOCIATION_STRONG_SUPPORT_SCORE_MIN = 0.55
 ASSOCIATION_PA_SUPPORT_SCORE_MIN = 0.55
@@ -95,9 +93,8 @@ ARTIFACT_LARGE_LABEL_DISTANCE_SCALE = 4.0
 ARTIFACT_SIDEBAND_FLUX_RATIO = 0.08
 ARTIFACT_SIDEBAND_DISTANCE_BEAM = 6.0
 
-# Merged-source measurement constants (legacy `lotss_association_merged_sources`
-# catalogue).  They belong to the published measurement method, so they are
-# named beside the other frozen method gates.
+# Merged-source measurement constants for the legacy
+# `lotss_association_merged_sources` catalogue.
 MEASUREMENT_PADDING_ARCSEC = 10.0
 MEASUREMENT_MIN_FLUX_RATIO_DOUBLE_LOBE = 0.1
 MEASUREMENT_PA_ALIGNMENT_TOLERANCE_DEG = 35.0
@@ -168,9 +165,8 @@ ASSOCIATION_WEIGHT_DEFAULTS: dict[str, float] = {
     "large_mask_swallow": 1.5,
 }
 
-# Association-type thresholds are scientific decisions too.  Keep their
-# reference values beside the rest of the schema so callers that construct a
-# mapping programmatically receive the same values as the YAML configuration.
+# Association-type thresholds for callers constructing a config
+# programmatically; the YAML materializes the same values.
 ASSOCIATION_TYPE_DEFAULTS: dict[str, dict[str, Any]] = {
     "compact_multi_gaussian": {"max_las_beam": 4.0},
     "continuous_extended": {"min_las_beam": 4.0},
@@ -272,10 +268,8 @@ LOCAL_POST_SPLIT_RISK_FACTOR = 0.75
 LOCAL_HIGH_RISK_MIN = 1.5
 LOCAL_MEDIUM_RISK_MIN = 0.9
 
-# Stage-2 and local-sanity defaults are kept here so production modules have a
-# single authoritative source. Public release configurations materialize all
-# of these values; the dictionaries also support callers constructing a config
-# programmatically before validation.
+# Stage-2 and local-sanity defaults; release YAML materializes all values,
+# and the dictionaries support programmatic configs before validation.
 LOCAL_SANITY_DEFAULTS: dict[str, Any] = {
     "enabled": True,
     "max_group_las_beam_before_check": 8.0,
@@ -1020,23 +1014,19 @@ def parse_pipeline_config(config: Mapping[str, Any], *, require_core: bool = Tru
 def validate_mapping(config: Mapping[str, Any] | None) -> dict[str, Any]:
     """Validate a user mapping and return its canonical effective mapping.
 
-    Production entry points must consume the same resolved mapping that is
-    written to provenance.  Returning the effective configuration here keeps
-    defaults in one place and prevents a caller from validating one mapping
-    while the scientific modules silently read another set of defaults.
+    Production entry points consume the resolved mapping returned here, so
+    validation and provenance always describe the same configuration.
     """
 
     if config is None or not isinstance(config, Mapping):
         raise ValueError("configuration must be a mapping")
     parse_pipeline_config(config)
-    # Import lazily to avoid the config <-> utils import cycle.  The public
-    # validation entry point lives in ``utils`` while this module owns the
-    # schema and defaults.
+    # Imported lazily to avoid a config <-> utils import cycle.
     from .utils import resolve_effective_config
 
     resolved = resolve_effective_config(config)
-    # The merge step is deliberately followed by validation.  This catches
-    # malformed optional sections before any output is created while retaining
-    # the strict release contract for user-supplied YAML.
+    # Validate after merging so malformed optional sections fail before any
+    # output is written while the strict release contract still applies to
+    # user-supplied YAML.
     parse_pipeline_config(resolved)
     return resolved

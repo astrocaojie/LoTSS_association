@@ -90,10 +90,8 @@ def estimate_rms(
                 raise ValueError(f"rms map shape {arr.shape} does not match image shape {image.shape}")
             clean = arr.astype(float, copy=True)
             invalid = ~np.isfinite(clean) | (clean <= 0)
-            # A supplied RMS map is input metadata, not a mask to be silently
-            # repaired.  In strict/production mode any invalid pixel is an
-            # error; replacing it with an image-derived estimate can change
-            # S/N selection while hiding a corrupt calibration product.
+            # Supplied RMS maps are input metadata; strict mode treats an
+            # invalid pixel as an error rather than repairing it.
             if strict and np.any(invalid):
                 raise ValueError("rms map contains non-positive or non-finite values")
             fallback = robust_mad_rms(image)

@@ -63,6 +63,8 @@ Positive evidence:
 - 3 sigma connected segmentation
 - 2.5 sigma connected segmentation
 - beam-width bridge support
+- residual bridge support, measured after subtracting approximate endpoint
+  beam models
 - ridge continuity along the component-to-component path
 - flux continuity
 - flow alignment
@@ -103,6 +105,7 @@ association_score =
   + w_conn_2p5sigma   * connected_at_2p5sigma
   + w_conn_2sigma     * connected_at_2sigma
   + w_bridge          * bridge_score
+  + 0.8 * w_bridge    * residual_bridge_score
   + w_ridge           * ridge_continuity_score
   + w_flux_continuity * flux_continuity_score
   + w_flow_alignment  * flow_alignment_score
@@ -115,8 +118,9 @@ association_score =
 ```
 
 If an edge is connected only at 2 sigma and lacks independent 2.5 sigma, 3
-sigma, bridge, ridge, or overlap support, its score is capped by
-`association.max_only_2sigma_score`.
+sigma, bridge, residual-bridge, ridge, or overlap support, its score is capped by
+`association.max_only_2sigma_score`. The residual-bridge term reuses the bridge
+weight scaled by a fixed factor of 0.8.
 
 Long-distance associations must have multiple supporting signals such as bridge,
 ridge, and alignment. Negative bowls and sidelobe risk lower the group quality.
@@ -237,14 +241,16 @@ Quality is categorical, not a probability:
 Overview titles use:
 
 ```text
-cutout_id | gauss=... assoc_edges=... groups=... multi=... max_group=... only2=...
+cutout_id | gauss=... assoc_edges=... groups=... multi=... max_group=...
+labels shown: ... | edges shown: ...
 ```
 
 Zoom titles use:
 
 ```text
-cutout_id group_id | n=... LAS=... beam=... quality=... type=...
+cutout_id group_id | n=... | quality=...
 ```
 
-Zoom panels also show the mean association score, strong/weak edge counts,
-only-2sigma edge count, and artifact flags.
+Zoom panels draw the configured contours, Gaussian component positions with
+optional IDs, and accepted internal edges with their association scores when
+`zoom.draw_edge_scores` is enabled.

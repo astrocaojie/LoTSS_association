@@ -37,9 +37,9 @@ image support, and configured decision rules in this repository.
   an existing Stage 1 output.
 - `lotss_association.association`: authoritative Stage 1 Gaussian-component
   association implementation.
-- `lotss_association.graph_merge`: compatibility/diagnostic graph path; it is
-  used only when `--no-association-mode` is requested and is not an implicit
-  Stage 1 dependency.
+- `lotss_association.graph_merge`: compatibility/diagnostic graph path; its
+  clustering is used only when `--no-association-mode` is requested. Stage 1
+  association decisions do not use graph-merge scoring.
 - `scripts/visualize_results.py`: regenerate diagnostic figures from outputs.
 - `configs/default.yaml`: release configuration (strict metadata
   validation enabled).
