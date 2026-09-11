@@ -98,7 +98,9 @@ For a normal association run, provide:
 - Cutouts in H5 format with image data and physical metadata.
 - A PyBDSF Gaussian catalogue with sky coordinates (or explicit pixel x/y)
   plus flux and shape columns.
-- Optional WISE/CatWISE internet access for host-query support.
+- WISE/CatWISE access is optional for Stage 1 and diagnostic Stage 2 runs, 
+  but is required by the frozen default configuration used to construct the 
+  high-confidence Stage 2 catalogue reported in the paper.
 
 Large FITS/H5/catalogue products are intentionally not committed. Store local
 data under `data/` or pass paths explicitly on the command line.
